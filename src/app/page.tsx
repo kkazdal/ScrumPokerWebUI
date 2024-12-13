@@ -15,7 +15,8 @@ const Home = (): JSX.Element => {
       <HowItWorks />
       <Features />
       <Contacts />
-      <Footer/>
+      <Footer />
+
     </div>
   )
 }

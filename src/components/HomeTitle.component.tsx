@@ -1,9 +1,10 @@
 import { JSX } from "react";
+import { HomeSection } from "./HomeSection.component";
 
 export const HomeTitle = (): JSX.Element => {
     return (
-        <section id="home" className="h-auto bg-gray-50 flex items-center justify-center px-4 py-8">
-            <div className="container mx-auto flex flex-col-reverse lg:flex-col-reverse items-center justify-center gap-8">
+        <section id="home" className="h-[40rem] bg-gray-50 lg:flex justify-center px-4 py-8 ">
+            <div className="flex flex-col-reverse lg:flex-col-reverse justify-center">
                 <div className="text-center lg:text-center flex flex-col justify-center max-w-lg">
                     <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
                         Simplify Your <span className="text-blue-500">Scrum Meetings</span>
@@ -14,6 +15,7 @@ export const HomeTitle = (): JSX.Element => {
                     </p>
                 </div>
             </div>
+            <HomeSection />
         </section>
     );
 }
