@@ -15,8 +15,7 @@ export const HomeTitle = (): JSX.Element => {
                     </p>
                 </div>
 
-                {/* HomeSection Bileşeni */}
-                <HomeSection /> {/* Bu, HomeSection bileşenini eklediğimiz alan */}
+                <HomeSection />
             </div>
         </section>
     );
