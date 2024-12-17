@@ -8,8 +8,12 @@ import { TextFieldFormControl } from "./atoms/TextFieldController";
 import { HttpStatus, radioBtnEnum } from "@/enums";
 import postData from "@/services/PostData";
 import { useRouter } from 'next/navigation'
+import { useDispatch } from "react-redux";
+import { increment } from "@/redux/features/counter";
 
 export const HomeSection = (): JSX.Element => {
+    const dispatch = useDispatch();
+
     const {
         control: formControlNewSession,
         handleSubmit: formSubmitNewSession,
@@ -46,7 +50,7 @@ export const HomeSection = (): JSX.Element => {
 
     const [selectedTab, setSelectedTab] = useState<number>(0);
     const [selectedRadio, setSelectedRadio] = useState<number>(radioBtnList[0].id);
-    const router = useRouter();
+    const router: any = useRouter();
 
     const createNewSession = async (formValues: any) => {
         const params: any = {
@@ -67,6 +71,25 @@ export const HomeSection = (): JSX.Element => {
         }
     }
 
+    const postJoinSession = async (formValues: any) => {
+        dispatch(increment());
+        // const params: any = {
+        //     username: formValues.yourName,
+        //     roomUniqId: formValues.sessionId
+        // }
+
+        // try {
+        //     const response = await postData("/UserRoom/CreateUserRoom", params);
+        //     if (response.status == HttpStatus.OK) {
+
+        //         router.push(`/session/${formValues.sessionId}`);
+        //     }
+        // } catch (error) {
+        //     console.log(error);
+        // }
+    }
+
+
     const _onClickChangeTab = (id: number) => {
         setSelectedTab(id);
     }
@@ -80,7 +103,7 @@ export const HomeSection = (): JSX.Element => {
     }
 
     const _formSubmitJoinSession = (formValues: any): void => {
-        console.log('object :>> ', formValues);
+        postJoinSession(formValues);
     }
 
     return (
@@ -110,14 +133,6 @@ export const HomeSection = (): JSX.Element => {
                         <div className="space-y-4">
                             <div>
                                 <TextFieldFormControl
-                                    label="Session Name"
-                                    formControl={formControlNewSession}
-                                    name="sessionName"
-                                    requiredMessage="This field is required"
-                                />
-                            </div>
-                            <div>
-                                <TextFieldFormControl
                                     label="Your Name"
                                     formControl={formControlNewSession}
                                     name="yourName"
@@ -131,7 +146,6 @@ export const HomeSection = (): JSX.Element => {
                                     name="roomName"
                                 />
                             </div>
-
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700">Choose Estimation Method</label>
                                 <FormControl>
@@ -168,7 +182,7 @@ export const HomeSection = (): JSX.Element => {
                                     requiredMessage="This field is required"
                                 />
                             </div>
-                            <div>
+                            <div className="pt-4">
                                 <TextFieldFormControl
                                     label="Your Name"
                                     formControl={formControlJoinSession}
