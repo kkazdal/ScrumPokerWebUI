@@ -9,7 +9,8 @@ import { HttpStatus, radioBtnEnum } from "@/enums";
 import postData from "@/services/PostData";
 import { useRouter } from 'next/navigation'
 import { useDispatch } from "react-redux";
-import { increment } from "@/redux/features/counter";
+import { increment } from "@/redux/features/counterSlice";
+import { addInfoUser } from "@/redux/features/userInfoSlice";
 
 export const HomeSection = (): JSX.Element => {
     const dispatch = useDispatch();
@@ -72,21 +73,22 @@ export const HomeSection = (): JSX.Element => {
     }
 
     const postJoinSession = async (formValues: any) => {
-        dispatch(increment());
-        // const params: any = {
-        //     username: formValues.yourName,
-        //     roomUniqId: formValues.sessionId
-        // }
+        const params: any = {
+            username: formValues.yourName,
+            roomUniqId: formValues.sessionId
+        }
 
-        // try {
-        //     const response = await postData("/UserRoom/CreateUserRoom", params);
-        //     if (response.status == HttpStatus.OK) {
+        try {
+            const response = await postData("/UserRoom/CreateUserRoom", params);
+            if (response.status == HttpStatus.OK) {
 
-        //         router.push(`/session/${formValues.sessionId}`);
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        // }
+                router.push(`/session/${formValues.sessionId}`);
+                dispatch(addInfoUser(params));
+
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
 

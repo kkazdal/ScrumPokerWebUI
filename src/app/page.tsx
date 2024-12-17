@@ -8,14 +8,13 @@ import { Contacts } from "@/components/Contacts.component";
 import { Footer } from "@/components/Footer.component";
 import { StoreProvider } from "@/redux/StoreProvider";
 import { store } from "@/redux/store/store";
-import { increment } from "@/redux/features/counter";
+import { increment } from "@/redux/features/counterSlice";
 
 const Home = (): JSX.Element => {
 
   return (
     <div>
-      <StoreProvider>
-
+  
         <Menu />
         <HomeTitle />
         <HowItWorks />
@@ -23,7 +22,6 @@ const Home = (): JSX.Element => {
         <Contacts />
         <Footer />
 
-      </StoreProvider>
 
     </div>
   )

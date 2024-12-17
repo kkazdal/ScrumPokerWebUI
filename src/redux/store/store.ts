@@ -1,4 +1,5 @@
-import counterSlice from "../features/counter";
+import counterSlice from "../features/counterSlice";
+import userInfoSlice from "../features/userInfoSlice";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import storage from "redux-persist/lib/storage"; // defaults to localStorage
 import { persistStore, persistReducer, PERSIST, REHYDRATE } from "redux-persist";
@@ -11,6 +12,7 @@ const persistConfig = {
 
 const appReducer = combineReducers({
     counterSlice: counterSlice,
+    userInfoSlice: userInfoSlice
 })
 
 const rootReducer = (state: any, action: any) => {
