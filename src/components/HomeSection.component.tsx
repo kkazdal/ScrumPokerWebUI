@@ -3,14 +3,14 @@ import React, { JSX, useState } from "react";
 import { Form, useForm } from "react-hook-form";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IosShareIcon from '@mui/icons-material/IosShare';
-import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { Alert, FormControl, FormControlLabel, Radio, RadioGroup, Snackbar } from "@mui/material";
 import { TextFieldFormControl } from "./atoms/TextFieldController";
 import { HttpStatus, radioBtnEnum } from "@/enums";
 import postData from "@/services/PostData";
 import { useRouter } from 'next/navigation'
 import { useDispatch } from "react-redux";
-import { increment } from "@/redux/features/counterSlice";
 import { addInfoUser } from "@/redux/features/userInfoSlice";
+
 
 export const HomeSection = (): JSX.Element => {
     const dispatch = useDispatch();
@@ -25,6 +25,10 @@ export const HomeSection = (): JSX.Element => {
         handleSubmit: formSubmitJoinSession,
     } = useForm();
 
+    const [openSnackbar, setOpenSnackbar] = useState({
+        open: false,
+        errorMessage: ""
+    });
 
     const radioBtnList = [
         {
@@ -68,7 +72,7 @@ export const HomeSection = (): JSX.Element => {
                 router.push(`/session/${roomId}`);
             }
         } catch (error) {
-            console.log(error);
+            errorMessageFunc(error);
         }
     }
 
@@ -86,8 +90,8 @@ export const HomeSection = (): JSX.Element => {
                 dispatch(addInfoUser(params));
 
             }
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            errorMessageFunc(error);
         }
     }
 
@@ -108,8 +112,46 @@ export const HomeSection = (): JSX.Element => {
         postJoinSession(formValues);
     }
 
+    const handleClose = (): void => {
+        setOpenSnackbar({
+            ...openSnackbar,
+            open: false
+        })
+    }
+
+    const errorMessageFunc = (error: any): void => {
+        const { errorMessage } = error.response.data;
+
+        if (errorMessage) {
+            setOpenSnackbar({
+                errorMessage,
+                open: true
+            })
+        } else {
+            setOpenSnackbar({
+                errorMessage: "An unexpected error occurred. Please try again.",
+                open: true
+            })
+        }
+    }
+
     return (
         <div className="w-full flex flex-col items-center mt-10">
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: "right" }}
+                open={openSnackbar.open}
+                autoHideDuration={2000}
+                onClose={handleClose}>
+
+                <Alert
+                    onClose={handleClose}
+                    severity="error"
+                    variant="filled"
+                    sx={{ width: '100%' }}>
+                    {openSnackbar.errorMessage}
+                </Alert>
+
+            </Snackbar>
             <div className="flex space-x-2 w-full justify-center">
                 <button
                     onClick={() => _onClickChangeTab(0)}

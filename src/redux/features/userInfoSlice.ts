@@ -13,7 +13,6 @@ const userInfoSlice = createSlice({
     reducers: {
         addInfoUser: (state, action) => {
             const findIndex: any = state.findIndex((item: any) => item?.roomUniqId == action.payload.roomUniqId);
-            console.log('action :>> ', action);
             
             if (findIndex == -1) {
                 state.push(action.payload);
