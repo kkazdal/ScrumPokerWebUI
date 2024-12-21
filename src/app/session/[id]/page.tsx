@@ -8,9 +8,10 @@ import { HttpStatus } from "@/enums/enums";
 import { voteList } from "@/constants/voteList";
 import { Menu } from "@/components/Menu.component";
 import { Footer } from "@/components/Footer.component";
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import CheckIcon from '@mui/icons-material/Check';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import { CardComponent } from "@/components/Card.component";
+import { UserComponent } from "@/components/User.component";
+import { Button } from "@mui/material";
 
 const SessionPage = (): JSX.Element => {
 
@@ -22,10 +23,11 @@ const SessionPage = (): JSX.Element => {
     const [loading, setLoading] = useState(false);
     const [connection, setConnection] = useState<any>(null);
     const [roomId, setRoomId] = useState<any>(null);
-    const [users, setUsers] = useState<any>([]);
+    const [userList, setUserList] = useState<any>([]);
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [selectedCard, setSelectedCard] = useState<any>();
     const [cardList, setCardList] = useState<any>([]);
+    const [estimateShow, setEstimateShow] = useState<boolean>(false);
 
     useEffect(() => {
         if (roomId) {
@@ -38,97 +40,96 @@ const SessionPage = (): JSX.Element => {
         setRoomId(id);
     }, []);
 
-    // useEffect(() => {
-    //     getCurrentUser();
-    // }, [roomId]);
+    useEffect(() => {
+        getCurrentUser();
+    }, [roomId]);
 
-    // useEffect(() => {
-    //     connectionSignalR();
-    // }, []);
+    useEffect(() => {
+        connectionSignalR();
+    }, []);
 
-    // useEffect(() => {
-    //     //Leave Room
-    //     return () => {
-    //         if (connection && currentUser && roomId) {
-    //             connection.invoke("LeaveRoom", roomId, currentUser.username);
-    //         }
-    //     }
-    // }, [connection, currentUser, roomId]);
+    useEffect(() => {
+        //Leave Room
+        return () => {
+            if (connection && currentUser && roomId) {
+                connection.invoke("LeaveRoom", roomId, currentUser.username);
+            }
+        }
+    }, [connection, currentUser, roomId]);
 
-    // useEffect(() => {
-    //     // Sayfa yenilendiğinde yapılacak aksiyon
-    //     const handleBeforeUnload = () => {
-    //         if (connection && currentUser && roomId) {
-    //             connection.invoke("LeaveRoom", roomId, currentUser.username);
-    //         }
-    //     };
+    useEffect(() => {
+        // Sayfa yenilendiğinde yapılacak aksiyon
+        const handleBeforeUnload = () => {
+            if (connection && currentUser && roomId) {
+                connection.invoke("LeaveRoom", roomId, currentUser.username);
+            }
+        };
 
-    //     // sayfa yenilendiğinde tetiklenmesi için event listener ekleyin
-    //     window.addEventListener("beforeunload", handleBeforeUnload);
+        // sayfa yenilendiğinde tetiklenmesi için event listener ekleyin
+        window.addEventListener("beforeunload", handleBeforeUnload);
 
-    //     // Cleanup işlemi
-    //     return () => {
-    //         window.removeEventListener("beforeunload", handleBeforeUnload);
-    //     };
-    // }, [connection, currentUser, roomId]);
+        // Cleanup işlemi
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [connection, currentUser, roomId]);
 
-    // // Bağlantı kurulumu
-    // useEffect(() => {
-    //     if (currentUser?.username && connection && roomId) {
-    //         connection.start()
-    //             .then(() => {
-    //                 // Sunucuya "UserJoined" isteği gönder
-    //                 connection.invoke("UserJoined", roomId, currentUser.username);
+    // Bağlantı kurulumu
+    useEffect(() => {
+        if (currentUser?.username && connection && roomId) {
+            connection.start()
+                .then(() => {
+                    // Sunucuya "UserJoined" isteği gönder
+                    connection.invoke("UserJoined", roomId, currentUser.username);
 
-    //                 // Kullanıcıların listesini almak için sunucudan "ActiveUsers" mesajını dinle
-    //                 connection.invoke("GetActiveUsers", roomId);
+                    // Kullanıcıların listesini almak için sunucudan "ActiveUsers" mesajını dinle
+                    connection.invoke("GetActiveUsers", roomId);
 
-    //                 connection.on("ActiveUsers", (data: any) => {
-    //                     setUsers(data);
-    //                 });
+                    connection.on("ActiveUsers", (data: any) => {
+                        setUserList(data);
+                    });
 
-    //                 // Kullanıcı katıldığında gelen mesajı dinle
-    //                 connection.on("UserJoined", (user: any) => {
-    //                     setUsers((prevUsers: any[]) => [...prevUsers, { userName: user, userVote: null }]);  // Yeni kullanıcıyı ekle
-    //                 });
+                    // Kullanıcı katıldığında gelen mesajı dinle
+                    connection.on("UserJoined", (user: any) => {
+                        setUserList((prevUsers: any[]) => [...prevUsers, { userName: user, userVote: null }]);  // Yeni kullanıcıyı ekle
+                    });
 
-    //                 // Kullanıcı ayrıldığında gelen mesajı dinle
-    //                 connection.on("UserLeft", (user: any) => {
-    //                     setUsers((prevUsers: any[]) => prevUsers.filter((u) => u.userName !== user));  // Kullanıcıyı listeden çıkar
-    //                 });
+                    // Kullanıcı ayrıldığında gelen mesajı dinle
+                    connection.on("UserLeft", (user: any) => {
+                        setUserList((prevUsers: any[]) => prevUsers.filter((u) => u.userName !== user));  // Kullanıcıyı listeden çıkar
+                    });
 
-    //             })
-    //             .catch((err: any) => console.log('error :>> ', err));
-    //     }
+                })
+                .catch((err: any) => console.log('error :>> ', err));
+        }
 
-    // }, [connection, roomId, currentUser]);
+    }, [connection, roomId, currentUser]);
 
 
-    // const connectionSignalR = (): any => {
-    //     const newConnection = new signalR.HubConnectionBuilder()
-    //         .withUrl("http://localhost:5260/roomHub") // SignalR sunucu URL'si
-    //         .withAutomaticReconnect()
-    //         .build();
+    const connectionSignalR = (): any => {
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:5260/roomHub") // SignalR sunucu URL'si
+            .withAutomaticReconnect()
+            .build();
 
-    //     setConnection(newConnection);
+        setConnection(newConnection);
 
-    //     return () => {
-    //         if (connection) {
-    //             connection.stop();
-    //         }
-    //     };
-    // }
+        return () => {
+            if (connection) {
+                connection.stop();
+            }
+        };
+    }
 
-    // const getCurrentUser: any = () => {
-    //     if (roomId) {
-    //         const currentUserInfo: any = userInfo.filter((item: any) => item.roomUniqId == roomId)[0];
+    const getCurrentUser: any = () => {
+        if (roomId) {
+            const currentUserInfo: any = userInfo.filter((item: any) => item.roomUniqId == roomId)[0];
 
-    //         if (currentUserInfo && currentUserInfo !== currentUser) {
-    //             setCurrentUser(currentUserInfo);
-    //         }
-    //     }
-    // }
-
+            if (currentUserInfo && currentUserInfo !== currentUser) {
+                setCurrentUser(currentUserInfo);
+            }
+        }
+    }
 
     const getRoomInfo = async (roomUniqId: number) => {
 
@@ -155,7 +156,6 @@ const SessionPage = (): JSX.Element => {
 
     }
 
-
     const _onclickCardSelect = (card: any): void => {
         if (card == selectedCard) {
             setSelectedCard(null);
@@ -164,76 +164,12 @@ const SessionPage = (): JSX.Element => {
         }
     }
 
-    const colors = [
-        "#5e9cd7",
-        "#47c08d",
-        "#a87fd7",
-        "#d89344",
-        "#dc6f9a",
-        "#493272",
-        "#2f9ee4",
-        "#47c08d",
-        "#a87fd7",
-        "#d89344",
-        "#dc6f9a",
-        "#493272",
-        "#2f9ee4",
-    ];
-
-    const CardRender = (card: any, index: any): JSX.Element => {
-        return (
-            <div
-                onClick={() => _onclickCardSelect(card)}
-                key={card}
-                className={`absolute 
-              xl:w-[5rem] xl:h-[8rem]  // Extra large ekranlar için boyut
-              lg:w-[4rem] lg:h-[7rem] // Large ekranlar için boyut
-              md:w-[4rem] md:h-[6rem] // Medium ekranlar için boyut
-              sm:w-[2.5rem] sm:h-[5rem]  // Small ekranlar için boyut
-              rounded-md shadow-lg transform transition-all duration-200 hover:scale-105 hover:translate-y-[-20px] 
-              flex items-center justify-center text-white font-bold cursor-pointer
-              ${card == selectedCard && "translate-y-[-20px]"}
-              `}
-                style={{
-                    left: `${index * 8}%`, // Daha yakın konumlandırma
-                    zIndex: index, // Kartların sırayla üst üste binmesi için z-index
-                    backgroundColor: colors[index],
-                }}
-            >
-                <span
-                    className="absolute top-2 left-2 
-                xl:text-lg lg:text-md md:text-sm sm:text-xs text-[10px]" // Responsive metin boyutları
-                >
-                    {card}
-                </span>
-                <p className="xl:text-xl lg:text-lg md:text-md sm:text-sm text-[12px]">{card}</p> {/* Merkezdeki metin */}
-            </div>
-        );
+    const _onClickEstaimateShow = (): void => {
+        const status: boolean = estimateShow ? false : true;
+        setEstimateShow(status);
     }
 
-    const UserRenderComponent = (): JSX.Element => {
-        return (
-            <div className="flex justify-between items-center space-x-4 mb-3">
-                <div className="flex flex-row items-center">
-                    <div className="lg:w-10 lg:h-10 md:w-8 md:h-8 sm:w-8 sm:h-8 rounded-full lg:text-lg md:text-xs bg-[#1b8ef2] flex items-center justify-center text-white font-bold">
-                        A
-                    </div>
-
-                    <div className="lg:text-sm md:text-xs sm:text-xs font-black pl-3 whitespace-normal">
-                        Abdulkadir Kazdal
-                    </div>
-                </div>
-
-                <div className="w-9 h-12 bg-white rounded-lg shadow-lg flex justify-center items-center">
-                    {
-                        selectedCard == null ?
-                            <QuestionMarkIcon color="error" fontSize="large" />
-                            :
-                            <CheckIcon color="success" fontSize="large" />
-                    }
-                </div>
-            </div>
-        );
+    const _onClickDeleteEstaimate = (): void => {
     }
 
     const StoryPointLeftArea = (): JSX.Element => {
@@ -248,7 +184,13 @@ const SessionPage = (): JSX.Element => {
                         loading
                             ? <p>Loading</p>
                             : cardList.map((card: any, index: number) => (
-                                CardRender(card, index)
+                                <CardComponent
+                                    _onclickCardSelect={_onclickCardSelect}
+                                    card={card}
+                                    index={index}
+                                    selectedCard={selectedCard}
+                                    key={card}
+                                />
                             ))
                     }
                 </div>
@@ -274,7 +216,20 @@ const SessionPage = (): JSX.Element => {
                     <PeopleAltIcon fontSize="medium" className="text-white" />
                     <p className=" lg:text-sm md:text-xs sm:text-xs font-bold ml-2 text-white p-2  ">Participants</p>
                 </div>
-                <UserRenderComponent />
+                {
+                    userList &&
+                    userList.map((item: any, index: number) => {
+                        return (
+                            <UserComponent
+                                selectedCard={item.userVote}
+                                username={item.userName}
+                                key={`${item.userName}-${index}`}
+                                estimateShow={estimateShow}
+                            />
+                        );
+                    })
+                }
+
 
             </div>
         );
@@ -285,8 +240,22 @@ const SessionPage = (): JSX.Element => {
             <Menu />
             <div className="w-full h-[80%] flex justify-center content-start p-5">
                 <div className="bg-[#e2e1ec] h-full xl:w-[70%] lg:w-[80%] md:w-[85%] sm:w-[100%] rounded-md pt-5 pl-5">
-                    <div className="mb-5">
+                    <div className="mb-5 mr-5 flex justify-between">
                         <p className="text-xl font-bold text-[#3a80f6]">Story Points</p>
+                        <div className="flex gap-3">
+                            <Button
+                                onClick={_onClickDeleteEstaimate}
+                                variant="contained"
+                                color="error"
+                            >
+                                Delete Estimates
+                            </Button>
+                            <Button variant="contained" onClick={_onClickEstaimateShow}>
+                                {
+                                    estimateShow ? "Hide" : "Show"
+                                }
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="flex xl:flex-row lg:flex-row md:flex-row sm:flex-col xl:h-[%94] lg:h-[94%] md:h-[92%] sm:h-[90%]">
