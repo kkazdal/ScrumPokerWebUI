@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
 // Dinamik Axios POST isteği yapan fonksiyon
-const postData = async (endpoint: string, data: Record<string, any>, config?: AxiosRequestConfig) => {
+const postService = async (endpoint: string, data: Record<string, any>, config?: AxiosRequestConfig) => {
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
     const url = `${baseUrl}${endpoint}`; // Endpoint ile birleştir
@@ -17,4 +17,4 @@ const postData = async (endpoint: string, data: Record<string, any>, config?: Ax
     }
 };
 
-export default postData;
+export default postService;

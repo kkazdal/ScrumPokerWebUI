@@ -3,7 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = [
     {
         username: null,
-        roomUniqId: null
+        roomUniqId: null,
+        selectedRadio: null
     }
 ]
 
@@ -13,8 +14,8 @@ const userInfoSlice = createSlice({
     reducers: {
         addInfoUser: (state, action) => {
             const findIndex: any = state.findIndex((item: any) => item?.roomUniqId == action.payload.roomUniqId);
-            
-            if (findIndex == -1) {
+
+            if (findIndex == -1 || findIndex == 0) {
                 state.push(action.payload);
             } else {
                 state[findIndex] = {

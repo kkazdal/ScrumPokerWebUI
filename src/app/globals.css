@@ -22,3 +22,21 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 0.3rem;
+  /* Kaydırma çubuğunun genişliği */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+  /* Kaydırma çubuğunun renk tonu */
+  border-radius: 1rem;
+  /* Kaydırma çubuğunun kenarlarını yuvarlat */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #e5e7eb;
+  /* Kaydırma çubuğunun iz kısmı */
+  border-radius: 1rem;
+}

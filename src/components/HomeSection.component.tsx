@@ -5,11 +5,12 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import { Alert, FormControl, FormControlLabel, Radio, RadioGroup, Snackbar } from "@mui/material";
 import { TextFieldFormControl } from "./atoms/TextFieldController";
-import { HttpStatus, radioBtnEnum } from "@/enums";
-import postData from "@/services/PostData";
+import { HttpStatus, radioBtnEnum } from "@/enums/enums";
+import postService from "@/services/PostService";
 import { useRouter } from 'next/navigation'
 import { useDispatch } from "react-redux";
 import { addInfoUser } from "@/redux/features/userInfoSlice";
+import { voteList } from "@/constants/voteList";
 
 
 export const HomeSection = (): JSX.Element => {
@@ -30,31 +31,10 @@ export const HomeSection = (): JSX.Element => {
         errorMessage: ""
     });
 
-    const radioBtnList = [
-        {
-            id: radioBtnEnum.fibo,
-            value: "Fibonacci (0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89)",
-        },
-        {
-            id: radioBtnEnum.shortFibo,
-            value: "Short Fibonacci (0, ½, 1, 2, 3, 5, 8, 13, 20, 40, 100)",
-        },
-        {
-            id: radioBtnEnum.shirt,
-            value: "T-Shirt (XXS, XS, S, M, L, XL, XXL)",
-        },
-        {
-            id: radioBtnEnum.shirtNumber,
-            value: "T-Shirt & Numbers (S, M, L, XL, 1, 2, 3, 4, 5)",
-        },
-        {
-            id: radioBtnEnum.custom,
-            value: "Custom",
-        },
-    ]
+  
 
     const [selectedTab, setSelectedTab] = useState<number>(0);
-    const [selectedRadio, setSelectedRadio] = useState<number>(radioBtnList[0].id);
+    const [selectedRadio, setSelectedRadio] = useState<any>(voteList[0].id);
     const router: any = useRouter();
 
     const createNewSession = async (formValues: any) => {
@@ -63,12 +43,23 @@ export const HomeSection = (): JSX.Element => {
             roomName: formValues.roomName,
             estimationMethodId: selectedRadio
         }
-
         try {
-            const response = await postData("/UserRoom/FirstCreateUserRoom", params);
+            const selectedRadioBtnId = voteList.filter((item: any) => item.id == selectedRadio);
+
+            const response = await postService("/UserRoom/FirstCreateUserRoom", params);
+
             if (response.status == HttpStatus.OK) {
 
                 var roomId = response.data.roomUniqId;
+
+                const addUserParams: any = {
+                    username: formValues.yourName,
+                    roomUniqId: roomId,
+                    selectedRadio: selectedRadioBtnId
+                }
+
+                dispatch(addInfoUser(addUserParams));
+
                 router.push(`/session/${roomId}`);
             }
         } catch (error) {
@@ -83,7 +74,7 @@ export const HomeSection = (): JSX.Element => {
         }
 
         try {
-            const response = await postData("/UserRoom/CreateUserRoom", params);
+            const response = await postService("/UserRoom/CreateUserRoom", params);
             if (response.status == HttpStatus.OK) {
 
                 router.push(`/session/${formValues.sessionId}`);
@@ -200,7 +191,7 @@ export const HomeSection = (): JSX.Element => {
                                         onChange={handleChange}
                                     >
                                         {
-                                            radioBtnList.map((item: any) => {
+                                            voteList.map((item: any) => {
                                                 return <FormControlLabel key={item.id} value={item.id} control={<Radio />} label={item?.value} />
                                             })
                                         }
