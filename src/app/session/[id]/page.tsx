@@ -129,6 +129,7 @@ const SessionPage = (): JSX.Element => {
     //     }
     // }
 
+
     const getRoomInfo = async (roomUniqId: number) => {
 
         if (!loading) {
@@ -154,6 +155,15 @@ const SessionPage = (): JSX.Element => {
 
     }
 
+
+    const _onclickCardSelect = (card: any): void => {
+        if (card == selectedCard) {
+            setSelectedCard(null);
+        } else {
+            setSelectedCard(card);
+        }
+    }
+
     const colors = [
         "#5e9cd7",
         "#47c08d",
@@ -173,6 +183,7 @@ const SessionPage = (): JSX.Element => {
     const CardRender = (card: any, index: any): JSX.Element => {
         return (
             <div
+                onClick={() => _onclickCardSelect(card)}
                 key={card}
                 className={`absolute 
               xl:w-[5rem] xl:h-[8rem]  // Extra large ekranlar için boyut
@@ -180,7 +191,9 @@ const SessionPage = (): JSX.Element => {
               md:w-[4rem] md:h-[6rem] // Medium ekranlar için boyut
               sm:w-[2.5rem] sm:h-[5rem]  // Small ekranlar için boyut
               rounded-md shadow-lg transform transition-all duration-200 hover:scale-105 hover:translate-y-[-20px] 
-              flex items-center justify-center text-white font-bold`}
+              flex items-center justify-center text-white font-bold cursor-pointer
+              ${card == selectedCard && "translate-y-[-20px]"}
+              `}
                 style={{
                     left: `${index * 8}%`, // Daha yakın konumlandırma
                     zIndex: index, // Kartların sırayla üst üste binmesi için z-index
@@ -202,7 +215,7 @@ const SessionPage = (): JSX.Element => {
         return (
             <div className="flex justify-between items-center space-x-4 mb-3">
                 <div className="flex flex-row items-center">
-                    <div className="lg:w-10 lg:h-10 md:w-8 md:h-8 sm:w-8 sm:h-8 rounded-full lg:text-lg md:text-xs bg-[#1f2937] flex items-center justify-center text-white font-bold">
+                    <div className="lg:w-10 lg:h-10 md:w-8 md:h-8 sm:w-8 sm:h-8 rounded-full lg:text-lg md:text-xs bg-[#1b8ef2] flex items-center justify-center text-white font-bold">
                         A
                     </div>
 
@@ -212,9 +225,57 @@ const SessionPage = (): JSX.Element => {
                 </div>
 
                 <div className="w-9 h-12 bg-white rounded-lg shadow-lg flex justify-center items-center">
-                    {/* <QuestionMarkIcon color="error" fontSize="large" /> */}
-                    {/* <CheckIcon color="success" fontSize="large"/> */}
+                    {
+                        selectedCard == null ?
+                            <QuestionMarkIcon color="error" fontSize="large" />
+                            :
+                            <CheckIcon color="success" fontSize="large" />
+                    }
                 </div>
+            </div>
+        );
+    }
+
+    const StoryPointLeftArea = (): JSX.Element => {
+        return (
+            <div className="xl:flex-[2] lg:flex-[2] md:flex-[2] sm:flex-[1] flex flex-col justify-between">
+                <div>
+                    <p>Test</p>
+
+                </div>
+                <div className="relative w-full lg:h-[9rem] xl:h-[9rem] md:h-[7rem] sm:h-[6rem]">
+                    {
+                        loading
+                            ? <p>Loading</p>
+                            : cardList.map((card: any, index: number) => (
+                                CardRender(card, index)
+                            ))
+                    }
+                </div>
+            </div>
+        );
+    }
+
+    const StoryPointRightArea = (): JSX.Element => {
+        return (
+            <div className="
+                        xl:h-[96%] 
+                        lg:h-[96%]
+                        md:h-[97%]
+                        sm:h-[40%]
+                        xl:flex-[1]
+                        lg:flex-[1]
+                        md:flex-[1]
+                        sm:flex-[5]
+                        sm:w-full
+                        sm:justify-center
+                        overflow-auto w-[10rem]  xl:pl-5 lg:pl-5 md:pl-5 sm:pl-1 pr-3 custom-scrollbar bg-gray-300 rounded-lg p-5">
+                <div className="flex flex-row bg-[#3b81f6] rounded-lg justify-center items-center p-1 mb-5">
+                    <PeopleAltIcon fontSize="medium" className="text-white" />
+                    <p className=" lg:text-sm md:text-xs sm:text-xs font-bold ml-2 text-white p-2  ">Participants</p>
+                </div>
+                <UserRenderComponent />
+
             </div>
         );
     }
@@ -230,51 +291,10 @@ const SessionPage = (): JSX.Element => {
 
                     <div className="flex xl:flex-row lg:flex-row md:flex-row sm:flex-col xl:h-[%94] lg:h-[94%] md:h-[92%] sm:h-[90%]">
 
-                        <div className="xl:flex-[2] lg:flex-[2] md:flex-[2] sm:flex-[1]">
-                            <div className="relative w-full">
-                                {
-                                    loading
-                                        ? <p>Loading</p>
-                                        : cardList.map((card: any, index: number) => (
-                                            CardRender(card, index)
-                                        ))
-                                }
-                            </div>
-                        </div>
+                        <StoryPointLeftArea />
 
-                        <div className="
-                        xl:h-[96%] 
-                        lg:h-[96%]
-                        md:h-[97%]
-                        sm:h-[40%]
-                        xl:flex-[1]
-                        lg:flex-[1]
-                        md:flex-[1]
-                        sm:flex-[5]
-                        sm:w-full
-                        sm:justify-center
-                        overflow-auto w-[10rem]  xl:pl-5 lg:pl-5 md:pl-5 sm:pl-1 pr-3 custom-scrollbar">
-                            <div className="flex flex-row bg-[#3b81f6] rounded-lg justify-center items-center p-1 mb-5">
-                                <PeopleAltIcon fontSize="medium" className="text-white" />
-                                <p className=" lg:text-sm md:text-xs sm:text-xs font-bold ml-2 text-white p-2  ">Participants</p>
-                            </div>
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                            <UserRenderComponent />
-                        </div>
+                        <StoryPointRightArea />
+
                     </div>
                 </div>
             </div>
