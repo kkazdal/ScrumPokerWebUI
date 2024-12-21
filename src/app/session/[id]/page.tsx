@@ -228,7 +228,7 @@ const SessionPage = (): JSX.Element => {
                         <p className="text-xl font-bold text-[#3a80f6]">Story Points</p>
                     </div>
 
-                    <div className="flex xl:flex-row lg:flex-row md:flex-row sm:flex-col xl:h-full lg:h-full md:h-full sm:h-[90%]">
+                    <div className="flex xl:flex-row lg:flex-row md:flex-row sm:flex-col xl:h-[%94] lg:h-[94%] md:h-[92%] sm:h-[90%]">
 
                         <div className="xl:flex-[2] lg:flex-[2] md:flex-[2] sm:flex-[1]">
                             <div className="relative w-full">
@@ -243,9 +243,9 @@ const SessionPage = (): JSX.Element => {
                         </div>
 
                         <div className="
-                        xl:h-[87%] 
-                        lg:h-[90%]
-                        md:h-[90%]
+                        xl:h-[96%] 
+                        lg:h-[96%]
+                        md:h-[97%]
                         sm:h-[40%]
                         xl:flex-[1]
                         lg:flex-[1]
