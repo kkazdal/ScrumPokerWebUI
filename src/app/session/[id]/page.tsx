@@ -1,5 +1,5 @@
 "use client"
-import { JSX, useEffect, useState } from "react";
+import { JSX, useEffect, useMemo, useState } from "react";
 import * as signalR from '@microsoft/signalr';
 import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +31,15 @@ const SessionPage = (): JSX.Element => {
     const [estimateShow, setEstimateShow] = useState<boolean>(false);
 
     useEffect(() => {
+        if (userList.length > 0) {
+            const user: any = userList.filter((item: any) => item.userName == currentUser.username)[0];
+            const card: boolean = user?.userVote;
+            setSelectedCard(card);
+        }
+
+    }, [userList]);
+
+    useEffect(() => {
         if (currentUser?.userId) {
             getApiUserRoomInfo(currentUser.userId)
         }
@@ -58,31 +67,11 @@ const SessionPage = (): JSX.Element => {
         }
     }, [connection, currentUser, roomId]);
 
-    useEffect(() => {
-        //TODO: BURAYI KALDIRMAKTA FAYDA VAR
-        // Sayfa yenilendiğinde yapılacak aksiyon
-        const handleBeforeUnload = () => {
-            if (connection && currentUser && roomId) {
-                connection.invoke("LeaveRoom", roomId, currentUser.username);
-            }
-        };
-
-        // sayfa yenilendiğinde tetiklenmesi için event listener ekleyin
-        window.addEventListener("beforeunload", handleBeforeUnload);
-
-        // Cleanup işlemi
-        return () => {
-            window.removeEventListener("beforeunload", handleBeforeUnload);
-        };
-    }, [connection, currentUser, roomId]);
-
     // Bağlantı kurulumu
     useEffect(() => {
         if (currentUser?.username && connection && roomId) {
             connection.start()
                 .then(() => {
-
-
                     // Sunucuya "UserJoined" isteği gönder
                     connection.invoke("UserJoined", roomId, currentUser.username);
 
@@ -136,7 +125,6 @@ const SessionPage = (): JSX.Element => {
 
                     const cards: any = voteList.filter((item: any) => item.id == response.data.estimationMethodId)[0];
                     setCardList(cards.list);
-                    setSelectedCard(response.data.userVote);
                 }
             } catch (error) {
 
@@ -172,6 +160,33 @@ const SessionPage = (): JSX.Element => {
         }
 
     }
+
+    const deleteEstimate = async () => {
+
+        if (!loading) {
+            try {
+                setLoading(true);
+                const params: any = {
+                    roomUniqId: parseInt(roomId),
+                }
+
+                const response = await postService("/UserRoom/ResetUserRoomUserVote", params);
+
+                if (response.status == HttpStatus.OK) {
+                    connection.on("ActiveUsers", (data: any) => {
+                        const newList: any = sortUsersByUserName(data);
+                        setUserList(newList);
+                    });
+
+                }
+            } catch (error) {
+
+            } finally {
+                setLoading(false);
+            }
+        }
+
+    }
     //#endregion
 
 
@@ -182,7 +197,6 @@ const SessionPage = (): JSX.Element => {
         } else {
             selectCard = card;
         }
-        setSelectedCard(selectCard);
         postApiVote(selectCard);
     }
 
@@ -192,6 +206,7 @@ const SessionPage = (): JSX.Element => {
     }
 
     const _onClickDeleteEstaimate = (): void => {
+        deleteEstimate();
     }
 
     const connectionSignalR = (): any => {

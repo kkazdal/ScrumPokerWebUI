@@ -5,10 +5,11 @@ interface IPROPS {
     card: any,
     index: any,
     selectedCard: any,
-    _onclickCardSelect: (card: any) => void
+    _onclickCardSelect: (card: any) => void,
 }
 
 export const CardComponent = ({ card, index, selectedCard, _onclickCardSelect }: IPROPS): JSX.Element => {
+
     return (
         <div
             onClick={() => _onclickCardSelect(card)}
@@ -18,7 +19,7 @@ export const CardComponent = ({ card, index, selectedCard, _onclickCardSelect }:
           lg:w-[4rem] lg:h-[7rem] // Large ekranlar için boyut
           md:w-[4rem] md:h-[6rem] // Medium ekranlar için boyut
           sm:w-[2.5rem] sm:h-[5rem]  // Small ekranlar için boyut
-          rounded-md shadow-lg transform transition-all duration-200 hover:scale-105 hover:translate-y-[-20px] 
+          rounded-md shadow-lg transform transition-all duration-200 hover:scale-105 
           flex items-center justify-center text-white font-bold cursor-pointer
           ${card == selectedCard && "translate-y-[-20px]"}
           `}
