@@ -31,7 +31,7 @@ export const HomeSection = (): JSX.Element => {
         errorMessage: ""
     });
 
-  
+
 
     const [selectedTab, setSelectedTab] = useState<number>(0);
     const [selectedRadio, setSelectedRadio] = useState<any>(voteList[0].id);
@@ -76,9 +76,14 @@ export const HomeSection = (): JSX.Element => {
         try {
             const response = await postService("/UserRoom/CreateUserRoom", params);
             if (response.status == HttpStatus.OK) {
+                const userInfo: any = {
+                    username: formValues.yourName,
+                    roomUniqId: formValues.sessionId,
+                    userId: response.data.temporaryUserId
+                }
+                dispatch(addInfoUser(userInfo));
 
                 router.push(`/session/${formValues.sessionId}`);
-                dispatch(addInfoUser(params));
 
             }
         } catch (error: any) {

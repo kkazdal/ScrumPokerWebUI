@@ -12,6 +12,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { CardComponent } from "@/components/Card.component";
 import { UserComponent } from "@/components/User.component";
 import { Button } from "@mui/material";
+import postService from "@/services/PostService";
 
 const SessionPage = (): JSX.Element => {
 
@@ -31,7 +32,7 @@ const SessionPage = (): JSX.Element => {
 
     useEffect(() => {
         if (roomId) {
-            getRoomInfo(roomId)
+            getApiRoomInfo(roomId)
         }
     }, [roomId]);
 
@@ -105,22 +106,6 @@ const SessionPage = (): JSX.Element => {
 
     }, [connection, roomId, currentUser]);
 
-
-    const connectionSignalR = (): any => {
-        const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl("http://localhost:5260/roomHub") // SignalR sunucu URL'si
-            .withAutomaticReconnect()
-            .build();
-
-        setConnection(newConnection);
-
-        return () => {
-            if (connection) {
-                connection.stop();
-            }
-        };
-    }
-
     const getCurrentUser: any = () => {
         if (roomId) {
             const currentUserInfo: any = userInfo.filter((item: any) => item.roomUniqId == roomId)[0];
@@ -131,7 +116,8 @@ const SessionPage = (): JSX.Element => {
         }
     }
 
-    const getRoomInfo = async (roomUniqId: number) => {
+    //#region API
+    const getApiRoomInfo = async (roomUniqId: number) => {
 
         if (!loading) {
             try {
@@ -156,12 +142,58 @@ const SessionPage = (): JSX.Element => {
 
     }
 
-    const _onclickCardSelect = (card: any): void => {
-        if (card == selectedCard) {
-            setSelectedCard(null);
-        } else {
-            setSelectedCard(card);
+    const postApiVote = async (selectedCardInfo: any) => {
+
+        if (!loading) {
+            try {
+                setLoading(true);
+                const params: any = {
+                    userId: currentUser.userId,
+                    roomUniqId: parseInt(roomId),
+                    userVote: selectedCardInfo,
+
+                }
+
+                const response = await postService("/UserRoom/UpdateUserRoom", params);
+
+                if (response.status == HttpStatus.OK) {
+                    connection.invoke("GetActiveUsers", roomId);
+                }
+            } catch (error) {
+
+            } finally {
+                setLoading(false);
+            }
         }
+
+    }
+    //#endregion
+
+
+    const connectionSignalR = (): any => {
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:5260/roomHub") // SignalR sunucu URL'si
+            .withAutomaticReconnect()
+            .build();
+
+        setConnection(newConnection);
+
+        return () => {
+            if (connection) {
+                connection.stop();
+            }
+        };
+    }
+
+    const _onclickCardSelect = (card: any): void => {
+        let selectCard;
+        if (card == selectedCard) {
+            selectCard = null;
+        } else {
+            selectCard = card;
+        }
+        setSelectedCard(selectCard);
+        postApiVote(selectCard);
     }
 
     const _onClickEstaimateShow = (): void => {
@@ -181,7 +213,7 @@ const SessionPage = (): JSX.Element => {
                 </div>
                 <div className="relative w-full lg:h-[9rem] xl:h-[9rem] md:h-[7rem] sm:h-[6rem]">
                     {
-                        loading
+                        cardList.length == 0
                             ? <p>Loading</p>
                             : cardList.map((card: any, index: number) => (
                                 <CardComponent

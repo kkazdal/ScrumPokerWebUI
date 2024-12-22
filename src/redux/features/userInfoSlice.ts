@@ -4,7 +4,8 @@ const initialState = [
     {
         username: null,
         roomUniqId: null,
-        selectedRadio: null
+        selectedRadio: null,
+        userId: null
     }
 ]
 
@@ -20,7 +21,9 @@ const userInfoSlice = createSlice({
             } else {
                 state[findIndex] = {
                     ...state[findIndex],
-                    username: action.payload.username
+                    username: action.payload.username,
+                    userId: action.payload.userId,
+
                 }
             }
 
