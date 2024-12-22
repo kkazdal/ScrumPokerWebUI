@@ -11,7 +11,7 @@ import { Footer } from "@/components/Footer.component";
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { CardComponent } from "@/components/Card.component";
 import { UserComponent } from "@/components/User.component";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import postService from "@/services/PostService";
 
 const SessionPage = (): JSX.Element => {
@@ -31,10 +31,10 @@ const SessionPage = (): JSX.Element => {
     const [estimateShow, setEstimateShow] = useState<boolean>(false);
 
     useEffect(() => {
-        if (roomId) {
-            getApiRoomInfo(roomId)
+        if (currentUser?.userId) {
+            getApiUserRoomInfo(currentUser.userId)
         }
-    }, [roomId]);
+    }, [currentUser]);
 
     useEffect(() => {
         const id = pathname.split("/")[2];
@@ -59,6 +59,7 @@ const SessionPage = (): JSX.Element => {
     }, [connection, currentUser, roomId]);
 
     useEffect(() => {
+        //TODO: BURAYI KALDIRMAKTA FAYDA VAR
         // Sayfa yenilendiğinde yapılacak aksiyon
         const handleBeforeUnload = () => {
             if (connection && currentUser && roomId) {
@@ -80,6 +81,8 @@ const SessionPage = (): JSX.Element => {
         if (currentUser?.username && connection && roomId) {
             connection.start()
                 .then(() => {
+
+
                     // Sunucuya "UserJoined" isteği gönder
                     connection.invoke("UserJoined", roomId, currentUser.username);
 
@@ -87,7 +90,8 @@ const SessionPage = (): JSX.Element => {
                     connection.invoke("GetActiveUsers", roomId);
 
                     connection.on("ActiveUsers", (data: any) => {
-                        setUserList(data);
+                        const newList: any = sortUsersByUserName(data);
+                        setUserList(newList);
                     });
 
                     // Kullanıcı katıldığında gelen mesajı dinle
@@ -117,21 +121,22 @@ const SessionPage = (): JSX.Element => {
     }
 
     //#region API
-    const getApiRoomInfo = async (roomUniqId: number) => {
+    const getApiUserRoomInfo = async (tempUserId: number) => {
 
         if (!loading) {
             try {
                 setLoading(true);
                 const params: any = {
-                    roomUniqId
+                    tempUserId
                 }
 
-                const response = await getService("/Room/GetRoomUniqueByIdQuery", params);
+                const response = await getService("/UserRoom/GetVoteAndCardInfoByRoomIdUserInfo", params);
 
                 if (response.status == HttpStatus.OK) {
 
                     const cards: any = voteList.filter((item: any) => item.id == response.data.estimationMethodId)[0];
                     setCardList(cards.list);
+                    setSelectedCard(response.data.userVote);
                 }
             } catch (error) {
 
@@ -157,7 +162,7 @@ const SessionPage = (): JSX.Element => {
                 const response = await postService("/UserRoom/UpdateUserRoom", params);
 
                 if (response.status == HttpStatus.OK) {
-                    connection.invoke("GetActiveUsers", roomId);
+
                 }
             } catch (error) {
 
@@ -169,21 +174,6 @@ const SessionPage = (): JSX.Element => {
     }
     //#endregion
 
-
-    const connectionSignalR = (): any => {
-        const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl("http://localhost:5260/roomHub") // SignalR sunucu URL'si
-            .withAutomaticReconnect()
-            .build();
-
-        setConnection(newConnection);
-
-        return () => {
-            if (connection) {
-                connection.stop();
-            }
-        };
-    }
 
     const _onclickCardSelect = (card: any): void => {
         let selectCard;
@@ -204,7 +194,31 @@ const SessionPage = (): JSX.Element => {
     const _onClickDeleteEstaimate = (): void => {
     }
 
+    const connectionSignalR = (): any => {
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:5260/roomHub") // SignalR sunucu URL'si
+            .withAutomaticReconnect()
+            .build();
+
+        setConnection(newConnection);
+
+        return () => {
+            if (connection) {
+                connection.stop();
+            }
+        };
+    }
+
+    const sortUsersByUserName = (users: any) => {
+        return [...users].sort((a, b) => {
+            if (a.userName < b.userName) return -1;
+            if (a.userName > b.userName) return 1;
+            return 0;
+        });
+    };
+
     const StoryPointLeftArea = (): JSX.Element => {
+
         return (
             <div className="xl:flex-[2] lg:flex-[2] md:flex-[2] sm:flex-[1] flex flex-col justify-between">
                 <div>
@@ -214,7 +228,7 @@ const SessionPage = (): JSX.Element => {
                 <div className="relative w-full lg:h-[9rem] xl:h-[9rem] md:h-[7rem] sm:h-[6rem]">
                     {
                         cardList.length == 0
-                            ? <p>Loading</p>
+                            ? <CircularProgress />
                             : cardList.map((card: any, index: number) => (
                                 <CardComponent
                                     _onclickCardSelect={_onclickCardSelect}
@@ -249,17 +263,20 @@ const SessionPage = (): JSX.Element => {
                     <p className=" lg:text-sm md:text-xs sm:text-xs font-bold ml-2 text-white p-2  ">Participants</p>
                 </div>
                 {
-                    userList &&
-                    userList.map((item: any, index: number) => {
-                        return (
-                            <UserComponent
-                                selectedCard={item.userVote}
-                                username={item.userName}
-                                key={`${item.userName}-${index}`}
-                                estimateShow={estimateShow}
-                            />
-                        );
-                    })
+                    userList.length == 0 ?
+                        <CircularProgress />
+                        :
+                        userList.map((item: any, index: number) => {
+                            return (
+                                <UserComponent
+                                    selectedCard={item.userVote}
+                                    username={item.userName}
+                                    key={`${item.userName}-${index}`}
+                                    estimateShow={estimateShow}
+                                    isCurrent={item?.userName == currentUser.username}
+                                />
+                            );
+                        })
                 }
 
 
