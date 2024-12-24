@@ -275,7 +275,9 @@ const SessionComponent = (): JSX.Element => {
 
     const StoryPointLeftArea = (): JSX.Element => {
         return (
-            <div className="
+            <div className="flex flex-col justify-between flex-[2] overflow-auto">
+                <p className="text-xl font-bold text-[#3a80f6] mb-2">Story Points</p>
+                <div className="
             xl:flex-[2] 
             lg:flex-[2] 
             md:flex-[2] 
@@ -283,98 +285,85 @@ const SessionComponent = (): JSX.Element => {
             flex 
             flex-col 
             justify-between overflow-auto">
-                <div className="overflow-auto lg:h-[32rem] xl:h-[35rem] md:h-[28rem] sm:h-[25rem]">
-                    <PointTableComponent list={pointTableList} />
-                </div>
-                <div className="relative w-full lg:h-[9rem] xl:h-[9rem] md:h-[7rem] sm:h-[6rem]">
-                    {
-                        cardList.length == 0
-                            ? <CircularProgress />
-                            : cardList.map((card: any, index: number) => (
-                                <CardComponent
-                                    _onclickCardSelect={_onclickCardSelect}
-                                    card={card}
-                                    index={index}
-                                    selectedCard={selectedCard}
-                                    key={card}
-                                />
-                            ))
-                    }
+                    <div className="overflow-auto lg:h-[32rem] xl:h-[35rem] md:h-[28rem] sm:h-[25rem]">
+                        <PointTableComponent list={pointTableList} />
+                    </div>
+                    <div className="relative w-full lg:h-[9rem] xl:h-[9rem] md:h-[7rem] sm:h-[6rem]">
+                        {
+                            cardList.length == 0
+                                ? <CircularProgress />
+                                : cardList.map((card: any, index: number) => (
+                                    <CardComponent
+                                        _onclickCardSelect={_onclickCardSelect}
+                                        card={card}
+                                        index={index}
+                                        selectedCard={selectedCard}
+                                        key={card}
+                                    />
+                                ))
+                        }
+                    </div>
                 </div>
             </div>
+
         );
     }
 
     const StoryPointRightArea = (): JSX.Element => {
         return (
-            <div className="
-                        xl:h-[96%] 
-                        lg:h-[96%]
-                        md:h-[97%]
-                        sm:h-[40%]
-                        xl:flex-[1]
-                        lg:flex-[1]
-                        md:flex-[1]
-                        sm:flex-[5]
-                        sm:w-full
-                        sm:justify-center
-                        overflow-auto w-[10rem]  xl:pl-5 lg:pl-5 md:pl-5 sm:pl-1 pr-3 custom-scrollbar bg-gray-300 rounded-lg p-5">
-                <div className="flex flex-row bg-[#3b81f6] rounded-lg justify-center items-center p-1 mb-5">
-                    <PeopleAltIcon fontSize="medium" className="text-white" />
-                    <p className=" lg:text-sm md:text-xs sm:text-xs font-bold ml-2 text-white p-2  ">Participants</p>
+            <div className="h-full overflow-auto flex flex-col gap-3 flex-[1]">
+                <div className="flex gap-3 mr-2 ">
+                    <Button
+                        onClick={_onClickDeleteEstaimate}
+                        variant="contained"
+                        color="error"
+
+                    >
+                        <p className="xl:text-[0.8rem] lg:text-[0.7rem] sm:text-[0.7rem] md:text-[0.7rem] font-bold">Delete Estimates</p>
+                    </Button>
+                    <Button variant="contained" onClick={_onClickEstaimateShow}>
+                        <p className="xl:text-[0.8rem] lg:text-[0.7rem] sm:text-[0.7rem] md:text-[0.7rem] font-bold">
+                            {
+                                estimateShow ? "Hide" : "Show"
+                            }
+                        </p>
+                    </Button>
                 </div>
-                {
-                    userList.length == 0 ?
-                        <CircularProgress />
-                        :
-                        userList.map((item: any, index: number) => {
-                            return (
-                                <UserComponent
-                                    selectedCard={item.userVote}
-                                    username={item.userName}
-                                    key={`${item.userName}-${index}`}
-                                    estimateShow={estimateShow}
-                                    isCurrent={item?.userName == currentUser.username}
-                                />
-                            );
-                        })
-                }
+                <div className="
+                        w-full
+                        sm:justify-center
+                        overflow-auto   xl:pl-5 lg:pl-5 md:pl-5 sm:pl-1 pr-3 custom-scrollbar bg-gray-300 rounded-lg p-5">
+                    <div className="flex flex-row bg-[#3b81f6] rounded-lg justify-center items-center p-1 mb-5">
+                        <PeopleAltIcon fontSize="medium" className="text-white" />
+                        <p className=" lg:text-sm md:text-xs sm:text-xs ml-2 text-white p-2 font-bold">Participants</p>
+                    </div>
+                    {
+                        userList.length == 0 ?
+                            <CircularProgress />
+                            :
+                            userList.map((item: any, index: number) => {
+                                return (
+                                    <UserComponent
+                                        selectedCard={item.userVote}
+                                        username={item.userName}
+                                        key={`${item.userName}-${index}`}
+                                        estimateShow={estimateShow}
+                                        isCurrent={item?.userName == currentUser.username}
+                                    />
+                                );
+                            })
+                    }
 
-
+                </div>
             </div>
+
         );
     }
 
     return (
-        <div className="w-full h-[80%] flex justify-center content-start p-5">
+        <div className="w-full h-[50rem] flex justify-center p-5">
             <div className="bg-[#e2e1ec] h-full xl:w-[60%] lg:w-[70%] md:w-[75%] sm:w-[100%] rounded-md pt-5 pl-5">
-                <div className="mb-5 mr-5 xl:flex xl:justify-between lg:flex lg:justify-between md:flex md:justify-between ">
-                    <p className="text-xl font-bold text-[#3a80f6]">Story Points</p>
-                    <div className="flex gap-3 sm:mt-2">
-                        <Button
-                            onClick={_onClickDeleteEstaimate}
-                            variant="contained"
-                            color="error"
-
-                        >
-                            <p className="sm:text-[0.7rem]">Delete Estimates</p>
-                        </Button>
-                        <Button variant="contained" onClick={_onClickEstaimateShow}>
-                            <p className="sm:text-[0.7rem]">
-                                {
-                                    estimateShow ? "Hide" : "Show"
-                                }
-                            </p>
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="flex xl:flex-row lg:flex-row md:flex-row sm:flex-col 
-                xl:h-[%94]
-                lg:h-[94%]
-                md:h-[92%] 
-                sm:h-[85%]
-                ">
+                <div className="flex justify-between xl:flex-row lg:flex-row md:flex-row sm:flex-col h-full">
 
                     <StoryPointLeftArea />
 
