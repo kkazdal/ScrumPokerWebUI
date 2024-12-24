@@ -108,7 +108,7 @@ const SessionComponent = (): JSX.Element => {
             const voteList: any[] = [];
 
             // User listesi üzerinden işlem yapıyoruz
-            userList.map((item: any) => {
+            userList.map((item: any, index: number) => {
                 const cardIdIndex = cardList.findIndex((cardItem: any) => cardItem == item?.userVote);
 
                 // Her bir kullanıcı için oyu ve renk bilgisini ekliyoruz
@@ -116,6 +116,7 @@ const SessionComponent = (): JSX.Element => {
                     userName: item?.userName,
                     vote: item?.userVote,
                     color: colors[cardIdIndex],
+                    id: index
                 });
             });
 

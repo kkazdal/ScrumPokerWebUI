@@ -36,7 +36,7 @@ export const UserComponent = ({ username, selectedCard, estimateShow, isCurrent 
                     </div>
                 </div>
 
-                <div className="xl:w-9 xl:h-12 lg:w-7 lg:h-10 bg-white rounded-lg shadow-lg flex justify-center items-center">
+                <div className="xl:w-9 xl:h-12 lg:w-7 lg:h-10 md:w-7 md:h-10 sm:w-7 sm:h-10 bg-white rounded-md shadow-lg flex justify-center items-center">
                     <UserCardControl />
                 </div>
             </div>
