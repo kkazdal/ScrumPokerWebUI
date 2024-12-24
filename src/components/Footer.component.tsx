@@ -1,5 +1,4 @@
 import { JSX } from "react";
-import XIcon from '@mui/icons-material/X';
 
 export const Footer = (): JSX.Element => {
     return (

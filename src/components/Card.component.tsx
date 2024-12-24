@@ -1,3 +1,4 @@
+"use client"
 import { colors } from "@/constants/cardColorList";
 import { JSX } from "react";
 

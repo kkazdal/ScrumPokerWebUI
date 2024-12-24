@@ -32,7 +32,6 @@ export const HomeSection = (): JSX.Element => {
     });
 
 
-
     const [selectedTab, setSelectedTab] = useState<number>(0);
     const [selectedRadio, setSelectedRadio] = useState<any>(voteList[0].id);
     const router: any = useRouter();
@@ -55,7 +54,8 @@ export const HomeSection = (): JSX.Element => {
                 const addUserParams: any = {
                     username: formValues.yourName,
                     roomUniqId: roomId,
-                    selectedRadio: selectedRadioBtnId
+                    selectedRadio: selectedRadioBtnId,
+                    userId: response.data.temporaryUserId
                 }
 
                 dispatch(addInfoUser(addUserParams));

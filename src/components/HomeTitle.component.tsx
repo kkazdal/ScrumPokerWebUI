@@ -2,7 +2,6 @@ import { JSX } from "react";
 import { HomeSection } from "./HomeSection.component";
 
 export const HomeTitle = (): JSX.Element => {
-    
     return (
         <section id="home" className="h-auto bg-gray-50 flex justify-center px-4 py-8">
             <div className="flex flex-col lg:flex-row  items-start w-full max-w-screen-xl">
