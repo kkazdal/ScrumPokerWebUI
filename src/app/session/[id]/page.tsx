@@ -83,14 +83,13 @@ const SessionPage = (): JSX.Element => {
                         setUserList(newList);
                     });
 
-                    // Kullanıcı katıldığında gelen mesajı dinle
-                    connection.on("UserJoined", (user: any) => {
-                        setUserList((prevUsers: any[]) => [...prevUsers, { userName: user, userVote: null }]);  // Yeni kullanıcıyı ekle
-                    });
-
                     // Kullanıcı ayrıldığında gelen mesajı dinle
                     connection.on("UserLeft", (user: any) => {
                         setUserList((prevUsers: any[]) => prevUsers.filter((u) => u.userName !== user));  // Kullanıcıyı listeden çıkar
+                    });
+
+                    connection.on("GetShowEstimateNotify", (data: any) => {
+                        setEstimateShow(data);
                     });
 
                 })
@@ -162,7 +161,6 @@ const SessionPage = (): JSX.Element => {
     }
 
     const deleteEstimate = async () => {
-
         if (!loading) {
             try {
                 setLoading(true);
@@ -201,8 +199,7 @@ const SessionPage = (): JSX.Element => {
     }
 
     const _onClickEstaimateShow = (): void => {
-        const status: boolean = estimateShow ? false : true;
-        setEstimateShow(status);
+        connection.invoke("SetShowEstimateNotify", roomId, !estimateShow);
     }
 
     const _onClickDeleteEstaimate = (): void => {
