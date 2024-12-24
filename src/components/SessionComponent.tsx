@@ -312,16 +312,23 @@ const SessionComponent = (): JSX.Element => {
     const StoryPointRightArea = (): JSX.Element => {
         return (
             <div className="h-full overflow-auto flex flex-col gap-3 flex-[1]">
-                <div className="flex gap-3 mr-2 ">
+                <div className="flex gap-3 mr-2 sm:mt-2 md:mt-2 justify-end">
                     <Button
                         onClick={_onClickDeleteEstaimate}
                         variant="contained"
                         color="error"
-
+                        style={{
+                            padding: "5px"
+                        }}
                     >
                         <p className="xl:text-[0.8rem] lg:text-[0.7rem] sm:text-[0.7rem] md:text-[0.7rem] font-bold">Delete Estimates</p>
                     </Button>
-                    <Button variant="contained" onClick={_onClickEstaimateShow}>
+                    <Button
+                        variant="contained"
+                        onClick={_onClickEstaimateShow}
+                        style={{
+                            padding: "5px"
+                        }}>
                         <p className="xl:text-[0.8rem] lg:text-[0.7rem] sm:text-[0.7rem] md:text-[0.7rem] font-bold">
                             {
                                 estimateShow ? "Hide" : "Show"
@@ -335,7 +342,7 @@ const SessionComponent = (): JSX.Element => {
                         overflow-auto   xl:pl-5 lg:pl-5 md:pl-5 sm:pl-1 pr-3 custom-scrollbar bg-gray-300 rounded-lg p-5">
                     <div className="flex flex-row bg-[#3b81f6] rounded-lg justify-center items-center p-1 mb-5">
                         <PeopleAltIcon fontSize="medium" className="text-white" />
-                        <p className=" lg:text-sm md:text-xs sm:text-xs ml-2 text-white p-2 font-bold">Participants</p>
+                        <p className=" lg:text-sm md:text-xs sm:text-xs ml-2 text-white p-1 font-bold">Participants</p>
                     </div>
                     {
                         userList.length == 0 ?
@@ -363,7 +370,7 @@ const SessionComponent = (): JSX.Element => {
     return (
         <div className="w-full h-[50rem] flex justify-center p-5">
             <div className="bg-[#e2e1ec] h-full xl:w-[60%] lg:w-[70%] md:w-[75%] sm:w-[100%] rounded-md pt-5 pl-5">
-                <div className="flex justify-between xl:flex-row lg:flex-row md:flex-row sm:flex-col h-full">
+                <div className="flex justify-between xl:flex-row lg:flex-row md:flex-col sm:flex-col h-full">
 
                     <StoryPointLeftArea />
 
