@@ -32,7 +32,7 @@ const SessionComponent = (): JSX.Element => {
     const [currentUser, setCurrentUser] = useState<any>(null);
     const [selectedCard, setSelectedCard] = useState<any>();
     const [cardList, setCardList] = useState<Array<any>>([]);
-    const [estimateShow, setEstimateShow] = useState<boolean>(false);
+    const [estimateShow, setEstimateShow] = useState<boolean | null>(null);
     const [pointTableList, setPointTableList] = useState<any>([]);
 
     useEffect(() => {
@@ -77,6 +77,9 @@ const SessionComponent = (): JSX.Element => {
         if (currentUser?.username && connection && roomId) {
             connection.start()
                 .then(() => {
+                    //Oyların açık olup olup olmadığını bildirir
+                    connection.invoke("SetShowEstimateNotify", roomId);
+
                     // Sunucuya "UserJoined" isteği gönder
                     connection.invoke("UserJoined", roomId, currentUser.username);
 
@@ -244,7 +247,7 @@ const SessionComponent = (): JSX.Element => {
     }
 
     const _onClickEstaimateShow = (): void => {
-        connection.invoke("SetShowEstimateNotify", roomId, !estimateShow);
+        connection.invoke("UpdateEstimateNotify", roomId, !estimateShow);
     }
 
     const _onClickDeleteEstaimate = (): void => {
@@ -324,18 +327,25 @@ const SessionComponent = (): JSX.Element => {
                     >
                         <p className="xl:text-[0.8rem] lg:text-[0.7rem] sm:text-[0.7rem] md:text-[0.7rem] font-bold">Delete Estimates</p>
                     </Button>
-                    <Button
-                        variant="contained"
-                        onClick={_onClickEstaimateShow}
-                        style={{
-                            padding: "5px"
-                        }}>
-                        <p className="xl:text-[0.8rem] lg:text-[0.7rem] sm:text-[0.7rem] md:text-[0.7rem] font-bold">
-                            {
-                                estimateShow ? "Hide" : "Show"
-                            }
-                        </p>
-                    </Button>
+                    {
+                        estimateShow == null ?
+                            <CircularProgress />
+                            :
+                            <Button
+                                variant="contained"
+                                onClick={_onClickEstaimateShow}
+                                style={{
+                                    padding: "5px"
+                                }}>
+
+                                <p className="xl:text-[0.8rem] lg:text-[0.7rem] sm:text-[0.7rem] md:text-[0.7rem] font-bold">
+
+                                    {
+                                        estimateShow ? "Hide" : "Show"
+                                    }
+                                </p>
+                            </Button>
+                    }
                 </div>
                 <div className="
                         w-full

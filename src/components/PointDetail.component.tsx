@@ -22,7 +22,7 @@ export const PointTableComponent = ({ list }: IPROPS): JSX.Element => {
                             {vote}
                         </p>
                     </div>
-                    <div key={`user-${vote}-${index}`} className="ml-3 flex justify-center">
+                    <div key={`user-${vote}-${index}`} className="ml-3 flex justify-center w-[6rem]">
                         {
                             users?.length > 0 &&
                             users.map((user: any, userIndex: number) => {

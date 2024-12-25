@@ -5,7 +5,7 @@ import CheckIcon from '@mui/icons-material/Check';
 interface IPROPS {
     username: string,
     selectedCard: string,
-    estimateShow: boolean,
+    estimateShow: boolean | null,
     isCurrent: boolean
 }
 
