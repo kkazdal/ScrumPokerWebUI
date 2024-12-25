@@ -12,6 +12,10 @@ export const PointTableComponent = ({ list }: IPROPS): JSX.Element => {
         voteKeyList.map((vote: any, index: number) => {
             const users: any = list[vote];
 
+            if (vote == "null") {
+                return <div key={`vote-${vote}-${index}`} ></div>
+            }
+
             return (
                 <div key={`vote-${vote}`} className="flex flex-row mb-2">
                     <div className={`w-12 h-16 p-[1rem] border-2 rounded-md`}
@@ -26,7 +30,6 @@ export const PointTableComponent = ({ list }: IPROPS): JSX.Element => {
                         {
                             users?.length > 0 &&
                             users.map((user: any, userIndex: number) => {
-
                                 return (
                                     <div key={`user-${vote}-${user.userName}-${userIndex}`} className="flex flex-col items-center justify-center max-w-14 mr-5">
                                         <div className="lg:w-10 lg:h-10 md:w-8 md:h-8 sm:w-8 sm:h-8 rounded-full lg:text-lg md:text-xs bg-[#1b8ef2] flex items-center justify-center text-white font-bold">
@@ -43,7 +46,6 @@ export const PointTableComponent = ({ list }: IPROPS): JSX.Element => {
                     </div>
                 </div>
             )
-
         })
     )
 }

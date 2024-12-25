@@ -13,6 +13,7 @@ import { Button, CircularProgress } from "@mui/material";
 import postService from "@/services/PostService";
 import { colors } from "@/constants/cardColorList";
 import { PointTableComponent } from "@/components/PointDetail.component";
+import CircleProgress from "./CircleProgress.component";
 
 const SessionComponent = (): JSX.Element => {
 
@@ -34,6 +35,7 @@ const SessionComponent = (): JSX.Element => {
     const [cardList, setCardList] = useState<Array<any>>([]);
     const [estimateShow, setEstimateShow] = useState<boolean | null>(null);
     const [pointTableList, setPointTableList] = useState<any>([]);
+    const [usedVoteNumber, setUsedVoteNumber] = useState<number>(0);//kullanılan oy sayısı
 
     useEffect(() => {
         if (userList.length > 0) {
@@ -72,14 +74,24 @@ const SessionComponent = (): JSX.Element => {
         }
     }, [connection, currentUser, roomId]);
 
+    const [percentage, setPercentage] = useState(0);
+
+    useEffect(() => {
+        if (userList.length > 0) {
+            const usedVolteList: any = userList.filter((item: any) => item.userVote != null);
+            setUsedVoteNumber(usedVolteList.length);
+            // Oy veren kullanıcı sayısına göre yüzdelik hesaplama
+            const progress = (usedVolteList.length / userList.length) * 100;
+            setPercentage(progress);
+        }
+    }, [userList]);
+
+
     // Bağlantı kurulumu
     useEffect(() => {
         if (currentUser?.username && connection && roomId) {
             connection.start()
                 .then(() => {
-                    //Oyların açık olup olup olmadığını bildirir
-                    connection.invoke("SetShowEstimateNotify", roomId);
-
                     // Sunucuya "UserJoined" isteği gönder
                     connection.invoke("UserJoined", roomId, currentUser.username);
 
@@ -95,6 +107,9 @@ const SessionComponent = (): JSX.Element => {
                     connection.on("UserLeft", (user: any) => {
                         setUserList((prevUsers: any[]) => prevUsers.filter((u) => u.userName !== user));  // Kullanıcıyı listeden çıkar
                     });
+
+                    //Oyların açık olup olup olmadığını bildirir
+                    connection.invoke("SetShowEstimateNotify", roomId);
 
                     connection.on("GetShowEstimateNotify", (data: any) => {
                         setEstimateShow(data);
@@ -235,7 +250,6 @@ const SessionComponent = (): JSX.Element => {
     }
     //#endregion
 
-
     const _onclickCardSelect = (card: any): void => {
         let selectCard;
         if (card == selectedCard) {
@@ -279,7 +293,7 @@ const SessionComponent = (): JSX.Element => {
 
     const StoryPointLeftArea = (): JSX.Element => {
         return (
-            <div className="flex flex-col justify-between flex-[2] overflow-auto">
+            <div className="flex flex-col justify-between flex-[2] overflow-aut pl-5">
                 <p className="text-xl font-bold text-[#3a80f6] mb-2">Story Points</p>
                 <div className="
             xl:flex-[2] 
@@ -290,7 +304,12 @@ const SessionComponent = (): JSX.Element => {
             flex-col 
             justify-between overflow-auto">
                     <div className="overflow-auto lg:h-[32rem] xl:h-[35rem] md:h-[28rem] sm:h-[25rem]">
-                        <PointTableComponent list={pointTableList} />
+                        {
+                            estimateShow ?
+                                <PointTableComponent list={pointTableList} />
+                                :
+                                <CircleProgress totalUsers={userList.length} votedUsers={usedVoteNumber} percentage={percentage} />
+                        }
                     </div>
                     <div className="relative w-full lg:h-[9rem] xl:h-[9rem] md:h-[7rem] sm:h-[6rem]">
                         {
@@ -380,7 +399,7 @@ const SessionComponent = (): JSX.Element => {
 
     return (
         <div className="w-full h-[50rem] flex justify-center p-5">
-            <div className="bg-[#e2e1ec] h-full xl:w-[60%] lg:w-[70%] md:w-[75%] sm:w-[100%] rounded-md pt-5 pl-5">
+            <div className="bg-[#e2e1ec] h-full xl:w-[60%] lg:w-[70%] md:w-[75%] sm:w-[100%] rounded-md pt-5">
                 <div className="flex justify-between xl:flex-row lg:flex-row md:flex-col sm:flex-col h-full">
 
                     <StoryPointLeftArea />

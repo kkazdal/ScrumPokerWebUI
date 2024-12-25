@@ -1,3 +1,4 @@
+"use client"
 import { JSX } from "react";
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import CheckIcon from '@mui/icons-material/Check';

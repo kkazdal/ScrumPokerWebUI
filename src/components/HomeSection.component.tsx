@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation'
 import { useDispatch } from "react-redux";
 import { addInfoUser } from "@/redux/features/userInfoSlice";
 import { voteList } from "@/constants/voteList";
+import * as signalR from '@microsoft/signalr';
 
 
 export const HomeSection = (): JSX.Element => {
@@ -74,6 +75,8 @@ export const HomeSection = (): JSX.Element => {
         }
 
         try {
+            connectionSignalR(formValues.sessionId, formValues.yourName);
+            
             const response = await postService("/UserRoom/CreateUserRoom", params);
             if (response.status == HttpStatus.OK) {
                 const userInfo: any = {
@@ -84,12 +87,36 @@ export const HomeSection = (): JSX.Element => {
                 dispatch(addInfoUser(userInfo));
 
                 router.push(`/session/${formValues.sessionId}`);
+              
 
             }
         } catch (error: any) {
             errorMessageFunc(error);
         }
     }
+
+    const connectionSignalR = (sessionId: string, username: string) => {
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl("http://localhost:5260/roomHub") // SignalR sunucu URL'si
+            .withAutomaticReconnect()
+            .build();
+
+
+        newConnection
+            .start()
+            .then(async () => {
+                await newConnection.invoke("UserJoined", sessionId, username);
+                await newConnection.invoke("GetActiveUsers", sessionId);
+            })
+            .catch((err) => console.error("SignalR connection failed: ", err));
+
+        // Bağlantıyı durdurma işlemi için
+        return () => {
+            if (newConnection) {
+                newConnection.stop();
+            }
+        };
+    };
 
 
     const _onClickChangeTab = (id: number) => {
@@ -116,7 +143,7 @@ export const HomeSection = (): JSX.Element => {
     }
 
     const errorMessageFunc = (error: any): void => {
-        const { errorMessage } = error.response.data;
+        const { errorMessage } = error?.response?.data;
 
         if (errorMessage) {
             setOpenSnackbar({
