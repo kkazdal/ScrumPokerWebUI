@@ -9,13 +9,11 @@ const CircleProgress = ({ totalUsers, votedUsers, percentage }: CircleProgressPr
 
     return (
         <div className="flex justify-center items-center relative">
-            {/* SVG çember */}
             <svg
                 className="w-32 h-32"
                 viewBox="0 0 36 36"
                 xmlns="http://www.w3.org/2000/svg"
             >
-                {/* Arka plan çemberi */}
                 <circle
                     cx="18"
                     cy="18"
@@ -24,7 +22,6 @@ const CircleProgress = ({ totalUsers, votedUsers, percentage }: CircleProgressPr
                     strokeWidth="2"
                     fill="none"
                 />
-                {/* İlerleyen çember */}
                 <circle
                     cx="18"
                     cy="18"
