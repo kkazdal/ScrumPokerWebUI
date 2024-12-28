@@ -33,15 +33,15 @@ const CircleProgress = ({ totalUsers, votedUsers, percentage }: CircleProgressPr
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="100"
-                    // strokeDashoffset={100 - percentage} // Burada yüzdelik oranı ayarları
-                    style={
-                        {
-                            "--from": percentage, // Başlangıç değeri
-                            "--to": 100 - percentage, // Bitiş değeri
-                        } as React.CSSProperties
-                    }
+                    strokeDashoffset={100 - percentage} // Burada yüzdelik oranı ayarları
+                    // style={
+                    //     {
+                    //         "--from": percentage, // Başlangıç değeri
+                    //         "--to": 100 - percentage, // Bitiş değeri
+                    //     } as React.CSSProperties
+                    // }
                     strokeLinecap="round"
-                    className="animate-progress"
+                    // className="animate-progress"
 
                 />
             </svg>
