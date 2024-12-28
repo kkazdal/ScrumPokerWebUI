@@ -36,6 +36,17 @@ const SessionComponent = (): JSX.Element => {
     const [estimateShow, setEstimateShow] = useState<boolean | null>(null);
     const [pointTableList, setPointTableList] = useState<any>([]);
     const [usedVoteNumber, setUsedVoteNumber] = useState<number>(0);//kullanılan oy sayısı
+    const [percentage, setPercentage] = useState(0);
+
+    useEffect(() => {
+        if (userList.length > 0) {
+            const usedVolteList: any = userList.filter((item: any) => item.userVote != null);
+            setUsedVoteNumber(usedVolteList.length);
+            // Oy veren kullanıcı sayısına göre yüzdelik hesaplama
+            const progress = (usedVolteList.length / userList.length) * 100;
+            setPercentage(progress);
+        }
+    }, [userList]);
 
     useEffect(() => {
         if (userList.length > 0) {
@@ -73,19 +84,6 @@ const SessionComponent = (): JSX.Element => {
             }
         }
     }, [connection, currentUser, roomId]);
-
-    const [percentage, setPercentage] = useState(0);
-
-    useEffect(() => {
-        if (userList.length > 0) {
-            const usedVolteList: any = userList.filter((item: any) => item.userVote != null);
-            setUsedVoteNumber(usedVolteList.length);
-            // Oy veren kullanıcı sayısına göre yüzdelik hesaplama
-            const progress = (usedVolteList.length / userList.length) * 100;
-            setPercentage(progress);
-        }
-    }, [userList]);
-
 
     // Bağlantı kurulumu
     useEffect(() => {
@@ -303,7 +301,7 @@ const SessionComponent = (): JSX.Element => {
             flex 
             flex-col 
             justify-between overflow-auto">
-                    <div className="overflow-auto lg:h-[32rem] xl:h-[35rem] md:h-[28rem] sm:h-[25rem]">
+                    <div className={`overflow-auto lg:h-[32rem] xl:h-[35rem] md:h-[28rem] sm:h-[25rem] ${!estimateShow && "flex justify-center"} `}>
                         {
                             estimateShow ?
                                 <PointTableComponent list={pointTableList} />

@@ -8,7 +8,7 @@ import { TextFieldFormControl } from "./atoms/TextFieldController";
 import { HttpStatus, radioBtnEnum } from "@/enums/enums";
 import postService from "@/services/PostService";
 import { useRouter } from 'next/navigation'
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addInfoUser } from "@/redux/features/userInfoSlice";
 import { voteList } from "@/constants/voteList";
 import * as signalR from '@microsoft/signalr';
@@ -16,6 +16,7 @@ import * as signalR from '@microsoft/signalr';
 
 export const HomeSection = (): JSX.Element => {
     const dispatch = useDispatch();
+    const userInfo = useSelector((item: any) => item.userInfoSlice);
 
     const {
         control: formControlNewSession,
@@ -69,29 +70,36 @@ export const HomeSection = (): JSX.Element => {
     }
 
     const postJoinSession = async (formValues: any) => {
-        const params: any = {
-            username: formValues.yourName,
-            roomUniqId: formValues.sessionId
-        }
+        const isUserRoom: any = userInfo.filter((item: any) => item.roomUniqId == formValues.sessionId);
 
-        try {
-            connectionSignalR(formValues.sessionId, formValues.yourName);
-            
-            const response = await postService("/UserRoom/CreateUserRoom", params);
-            if (response.status == HttpStatus.OK) {
-                const userInfo: any = {
-                    username: formValues.yourName,
-                    roomUniqId: formValues.sessionId,
-                    userId: response.data.temporaryUserId
-                }
-                dispatch(addInfoUser(userInfo));
+        if (isUserRoom.length > 0) {
+            router.push(`/session/${formValues.sessionId}`);
 
-                router.push(`/session/${formValues.sessionId}`);
-              
-
+        } else {
+            const params: any = {
+                username: formValues.yourName,
+                roomUniqId: formValues.sessionId
             }
-        } catch (error: any) {
-            errorMessageFunc(error);
+
+            try {
+                connectionSignalR(formValues.sessionId, formValues.yourName);
+
+                const response = await postService("/UserRoom/CreateUserRoom", params);
+                if (response.status == HttpStatus.OK) {
+                    const userInfo: any = {
+                        username: formValues.yourName,
+                        roomUniqId: formValues.sessionId,
+                        userId: response.data.temporaryUserId
+                    }
+                    dispatch(addInfoUser(userInfo));
+
+                    router.push(`/session/${formValues.sessionId}`);
+
+
+                }
+            } catch (error: any) {
+                errorMessageFunc(error);
+            }
         }
     }
 

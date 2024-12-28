@@ -1,7 +1,8 @@
+"use client"
 interface CircleProgressProps {
     totalUsers: number;  // Toplam kullanıcı sayısı
     votedUsers: number;  // Oy veren kullanıcı sayısı
-    percentage: number
+    percentage: number;
 }
 
 const CircleProgress = ({ totalUsers, votedUsers, percentage }: CircleProgressProps) => {
@@ -32,9 +33,16 @@ const CircleProgress = ({ totalUsers, votedUsers, percentage }: CircleProgressPr
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="100"
-                    strokeDashoffset={100 - percentage} // Burada yüzdelik oranı ayarları
+                    // strokeDashoffset={100 - percentage} // Burada yüzdelik oranı ayarları
+                    style={
+                        {
+                            "--from": percentage, // Başlangıç değeri
+                            "--to": 100 - percentage, // Bitiş değeri
+                        } as React.CSSProperties
+                    }
                     strokeLinecap="round"
-                    className="transition-all duration-1000 ease-in-out"
+                    className="animate-progress"
+
                 />
             </svg>
 
@@ -43,6 +51,7 @@ const CircleProgress = ({ totalUsers, votedUsers, percentage }: CircleProgressPr
                 {votedUsers}/{totalUsers}
             </div>
         </div>
+
     );
 };
 

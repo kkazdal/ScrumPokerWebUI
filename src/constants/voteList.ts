@@ -21,8 +21,8 @@ export const voteList = [
         value: "T-Shirt & Numbers (S, M, L, XL, 1, 2, 3, 4, 5)",
         list: ["S", "M", "L", "XL", "1", "2", "3", "4", "5"]
     },
-    {
-        id: radioBtnEnum.custom,
-        value: "Custom",
-    },
+    // {
+    //     id: radioBtnEnum.custom,
+    //     value: "Custom",
+    // },
 ]
